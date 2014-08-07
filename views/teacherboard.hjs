@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Canvas Draw</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript" src="/javascript/canvasdraw.js"></script>
+  <script type="text/javascript">
+  var cdraw = new canvas_draw();
+  $(document).ready(function(){
+      $.post('/login', {email: 'email@gmail.com'}).done(function (result) {
+        if(result.error == 0){
+          var socket = io.connect(document.domain, {query: 'token=' + result.token});
+          socket.on('draw', function(data) {
+            cdraw.draw(data.x, data.y, data.type);
+          });
+        } else {
+          alert('Login false');
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <canvas id="board" width="500" height="300" style="border:2px solid black; margin: 50px;" ></canvas>
+</body>
+</html>

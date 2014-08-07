@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Test ChatServer</title>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script>
+	$(document).ready(function(){
+		$('#login').click(function(){
+			//alert('click');
+			var email = $('#txtEmail').val();
+			$.post('/login', {email: email}).done(function (result) {
+				if(result.error == 0){
+					$('#formLogin').hide();
+					$('#auth').css('display', 'block');
+					connect_socket(result.token);
+				} else {
+					alert('Login false');
+				}
+			});
+		});
+	});
+	function connect_socket(token){
+		var socket = io.connect('http://localhost:5000', {query: 'token=' + token});
+		socket.on('handshaken', function(data) {
+			$('#btnEnterRoom').click(function() {
+				var roomId = $('#txtRoomId').val();
+				$('#roomBlock').html('<h3>Welcome to class room number: '+roomId+'</h3>');
+				socket.emit('subscribe', roomId);
+				socket.on('joinRoomCallback', function(o){
+					console.log(o.message);
+					socket.on('message', function(msg) {
+						$('#content').append('<p>'+msg+'</p>');
+					});
+					socket.on('chatMsgReceived', function(chatData){
+						//console.log(chatData);
+						$('#content').append('<p><strong>'+chatData.username+': </strong>'+chatData.message+'</p>');
+					});
+					$('#btnSubmit').click(function() {
+
+						var txtUserId = $('#txtUserId').val();
+						var txtUserName = $('#txtUserName').val();
+						var txtMessage = $('#txtMessage').val();
+
+						socket.emit('chat', {roomId:roomId, userId:txtUserId, username:txtUserName, message:txtMessage});
+					});
+				});
+			});
+		});
+	}
+	</script>
+	<style>
+		#auth {
+			display: none;
+		}
+	</style>
+</head>
+<body>
+	<h1>PureEd class room</h1>
+	<div id="formLogin">
+		<input type='text' id="txtEmail" placeholder="Enter your Email">
+		<input type="button" value="login" id="login">	
+	</div>
+	<div id="auth">
+		<div id="roomBlock">
+			<input type='text' id="txtRoomId" placeholder="Enter room's id">
+			<input type="button" id="btnEnterRoom" value="Enter">
+		</div>	
+		<div id="content"></div>
+		<div class="chatform">
+			<input type='text' id="txtUserId" name="userId" placeholder="User Id">
+			<input type='text' id="txtUserName" name="userName" placeholder="User Name"><br>
+			<input type='text' id="txtMessage" placeholder="Text"><input type="button" id="btnSubmit" value="Chat">
+		</div>
+	</div>
+</body>
+</html>
