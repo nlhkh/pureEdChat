@@ -1,5 +1,5 @@
 var socketioJwt = require('socketio-jwt');
-var jwtSecret = 'oiwefhdjhvUhasDHuaSDEFSDCJsdkfjdsfssdoreotirhjkd';
+var jwtSecret = process.env.jwtSecret || 'oiwefhdjhvUhasDHuaSDEFSDCJsdkfjdsfssdoreotirhjkd';
 var flashCmdPrefix = "vn.puresolutions.pureclassroom.";
 var rooms = [];
 var roomTeachers = {};
