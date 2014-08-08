@@ -71,20 +71,16 @@ var pureEdClassroom = function(io){
 		    doChat(io, data);
 		});
 
+		socket.on('draw', function(data){
+			io.emit('canvasdraw', data);
+		});
+
 		socket.on('drawClick', function(data) {
-			console.log('x: ' + data.x + ',y: ' + data.y + ',type: ' + data.type);
+			//console.log('x: ' + data.x + ',y: ' + data.y + ',type: ' + data.type);
 			socket.broadcast.emit('draw', {
 				x: data.x,
 				y: data.y,
 				type: data.type
-			});
-		});
-
-		socket.on('draw', function(data){
-			socket.broadcast.emit('draw', {
-				x: data.x,
-				y: data.y,
-				isPress: data.isPress
 			});
 		});
 	});

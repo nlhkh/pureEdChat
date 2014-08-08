@@ -3,17 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <title>Canvas Draw</title>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script type="text/javascript" src="/javascript/canvasdraw.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="/javascripts/canvasdraw.js"></script>
   <script type="text/javascript">
-  var cdraw = new canvas_draw();
   $(document).ready(function(){
+      var cdraw = new canvas_draw('board');
       $.post('/login', {email: 'email@gmail.com'}).done(function (result) {
         if(result.error == 0){
-          var socket = io.connect(document.domain, {query: 'token=' + result.token});
-          socket.on('draw', function(data) {
-            cdraw.draw(data.x, data.y, data.type);
+          socket = io.connect(document.domain, {query: 'token=' + result.token});
+
+
+          $('#board').mousedown(function(e){
+            cdraw.mousePressed = true;
+            var x = e.pageX - $(this).offset().left;
+            var y = e.pageY - $(this).offset().top;
+            socket.emit('draw', {x:x, y:y, isPress:false});
+            cdraw.draw(x,y,false);
           });
+
+          $('#board').mousemove(function(e){
+            if(cdraw.mousePressed){
+              var x = e.pageX - $(this).offset().left;
+              var y = e.pageY - $(this).offset().top;
+              socket.emit('draw', {x:x, y:y, isPress:true});
+              cdraw.draw(x,y,true);
+            }
+          });
+
+          $('#board').mouseup(function(e){
+            cdraw.mousePressed = false;
+          });
+
+          $('#board').mouseleave(function(e){
+            cdraw.mousePressed = false;
+          });
+
         } else {
           alert('Login false');
         }

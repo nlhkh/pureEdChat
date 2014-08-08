@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Canvas Draw</title>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="/javascripts/canvasdraw.js"></script>
+  <script type="text/javascript">
+  $(document).ready(function(){
+      var cdraw = new canvas_draw('board');
+      $.post('/login', {email: 'student@gmail.com'}).done(function (result) {
+        if(result.error == 0){
+          socket = io.connect(document.domain, {query: 'token=' + result.token});
+          socket.on('canvasdraw', function(data){
+            cdraw.draw(data.x,data.y,data.isPress);
+          });
+        } else {
+          alert('Login false');
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <canvas id="board" width="500" height="300" style="border:2px solid black; margin: 50px;" ></canvas>
+</body>
+</html>

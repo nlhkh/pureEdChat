@@ -17,7 +17,7 @@
     App.ctx.lineCap = "round";
 
     App.socket = io.connect(document.domain, {query: 'token=' + token});
-    App.socket.on('draw', function(data) {
+    App.socket.on('cdraw', function(data) {
       return App.draw(data.x, data.y, data.type);
     });
 

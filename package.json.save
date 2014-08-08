@@ -13,6 +13,5 @@
     "body-parser": "~1.0.0",
     "debug": "~0.7.4",
     "hjs": "~0.0.6",
-    "socket.io": "latest"
-  }
+    "socket.io": "lasted"  }
 }
